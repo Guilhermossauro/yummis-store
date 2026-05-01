@@ -64,3 +64,14 @@ Estes recursos são a base de uso diário e segurança, garantindo controle de a
 
 A negociação avançada melhora transparência e compliance, permitindo que todas as partes acompanhem prazos e histórico da negociação.
 
+
+## Etapa 5: Produtividade e Agilidade
+
+- Funcionalidade de duplicar pedido para recompra rápida a partir de cotações anteriores.
+- Catálogo de produtos frequentes para criar cotações com um clique.
+- Estrutura inicial de PWA com manifest.json para comportamento app-like em dispositivos móveis.
+
+### Justificativa
+
+Estas melhorias visam acelerar processos repetitivos e transformar o sistema em uma experiência mais mobile-friendly e produtiva.
+
