@@ -31,3 +31,14 @@ Cada etapa abaixo será trabalhada como um commit documentado e separado para cr
 
 Esta etapa organiza o fluxo de fornecedores e assegura que tudo seja tratado via APIs no /api/, com logs e segurança em cada ação.
 
+
+## Etapa 2: Fechamento de Negócios (Lado da Loja)
+
+- Interface de comparação de propostas lado a lado para a loja avaliar ofertas.
+- Workflow de aprovação/recusa com ação automática para recusar demais propostas quando uma for aceita.
+- Cálculo de economia mostrando a diferença entre a proposta escolhida e a mais cara.
+
+### Justificativa
+
+Esta etapa aumenta a eficiência de decisão de compra e garante consistência no processo de aprovação de propostas.
+
