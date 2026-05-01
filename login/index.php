@@ -17,6 +17,10 @@
         
         <form action="../api/login_process.php" method="POST">
             <div class="form-group">
+                <label for="nome">Nome Completo (opcional)</label>
+                <input type="text" id="nome" name="nome" placeholder="Seu nome completo">
+            </div>
+            <div class="form-group">
                 <label for="email">E-mail de Acesso</label>
                 <input type="email" id="email" name="email" placeholder="nome@empresa.com.br" required>
             </div>
