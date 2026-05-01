@@ -1,10 +1,6 @@
 <?php
-session_start();
-require_once '../config/db.php';
-
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'loja') {
-    die("Acesso negado.");
-}
+require_once 'api_base.php';
+exigirAutenticacao('loja');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -76,11 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "UPDATE pedidos SET produto_nome = ?, descricao = ?, imagem_url = ? WHERE id = ? AND loja_id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$produto, $descricao, $imagens_json, $id, $loja_id]);
-
+        registrarAcaoBackend('Editar pedido ID ' . $id);
         header('Location: ../dashboard-loja/index.php?status=sucesso_edit');
         exit();
 
     } catch (PDOException $e) {
+        registrarAcaoBackend('Falha ao editar pedido ID ' . $id . ': ' . $e->getMessage());
         error_log("Erro ao editar pedido: " . $e->getMessage());
         header('Location: ../dashboard-loja/index.php?status=erro_db');
         exit();

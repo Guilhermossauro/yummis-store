@@ -1,9 +1,7 @@
 <?php
-session_start();
-require_once '../config/db.php';
+require_once 'api_base.php';
 require_once 'helpers.php';
-
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'loja') die("Acesso negado.");
+exigirAutenticacao('loja');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $loja_id = $_SESSION['usuario_id'];
@@ -53,8 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$nome, $email, $documento, $endereco, $permissoes_json, $foto_caminho, $id_fornecedor, $loja_id]);
         }
+        registrarAcaoBackend('Editar fornecedor ID ' . $id_fornecedor);
         header('Location: ../dashboard-loja/fornecedores.php?status=sucesso_edit');
     } catch (PDOException $e) {
+        registrarAcaoBackend('Falha ao editar fornecedor ID ' . $id_fornecedor . ': ' . $e->getMessage());
         header('Location: ../dashboard-loja/fornecedores.php?status=erro_db');
     }
 }

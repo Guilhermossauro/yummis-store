@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once 'api_base.php';
+registrarAcaoBackend('Logout de usuário ID ' . ($_SESSION['usuario_id'] ?? 'desconhecido'));
 // Destrói todas as sessões ativas
 session_unset();
 session_destroy();

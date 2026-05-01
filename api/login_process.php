@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once '../config/db.php';
+require_once 'api_base.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
@@ -29,19 +28,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Redireciona conforme o nível de acesso
             if ($usuario['tipo_usuario'] === 'loja') {
+                registrarAcaoBackend('Login bem-sucedido para usuário ID ' . $usuario['id']);
                 header('Location: ../dashboard-loja/index.php');
             } else {
+                registrarAcaoBackend('Login bem-sucedido para usuário ID ' . $usuario['id']);
                 header('Location: ../fornecedor/index.php');
             }
             exit();
         } else {
             // Login falhou
+            registrarAcaoBackend('Falha de login para email: ' . $email);
             header('Location: ../login/index.php?error=invalid_credentials');
             exit();
         }
 
     } catch (PDOException $e) {
         // Logar erro e mostrar mensagem genérica
+        registrarAcaoBackend('Erro no processo de login: ' . $e->getMessage());
         error_log($e->getMessage());
         header('Location: ../login/index.php?error=system_error');
         exit();

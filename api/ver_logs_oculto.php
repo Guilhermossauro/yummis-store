@@ -1,5 +1,6 @@
 <?php
-session_start();
+require_once 'api_base.php';
+registrarAcaoBackend('Acesso à página de logs ocultos');
 
 // ==========================================
 // 🔒 BARREIRA DE SEGURANÇA MÁXIMA
@@ -23,9 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } else {
         $erro = 'Acesso Negado. Tentativa registrada.';
-        // Aqui já usamos o nosso próprio logger para dedurar quem tentou invadir!
-        require_once __DIR__ . '/api/logger.php';
-        registrarLog("TENTATIVA DE INVASÃO NO PAINEL DE LOGS com senha errada.");
+        registrarAcaoBackend('Tentativa de invasão no painel de logs ocultos com senha errada');
     }
 }
 

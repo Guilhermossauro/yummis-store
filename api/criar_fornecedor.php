@@ -1,9 +1,7 @@
 <?php
-session_start();
-require_once '../config/db.php';
+require_once 'api_base.php';
 require_once 'helpers.php'; // Usa o ajudante de conversão WebP
-
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'loja') die("Acesso negado.");
+exigirAutenticacao('loja');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $loja_id = $_SESSION['usuario_id'];
@@ -36,9 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "INSERT INTO usuarios (loja_id, nome, email, senha, foto_perfil, documento, tipo_usuario, permissoes) VALUES (?, ?, ?, ?, ?, ?, 'fornecedor', ?)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$loja_id, $nome, $email, $hash, $foto_caminho, $documento, $permissoesPadrao]);
-        
+        registrarAcaoBackend('Criar fornecedor');
         header('Location: ../dashboard-loja/fornecedores.php?status=sucesso');
     } catch (PDOException $e) {
+        registrarAcaoBackend('Falha ao criar fornecedor: ' . $e->getMessage());
         header('Location: ../dashboard-loja/fornecedores.php?status=erro_db');
     }
 }

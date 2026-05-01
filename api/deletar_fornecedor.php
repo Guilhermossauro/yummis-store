@@ -1,8 +1,6 @@
 <?php
-session_start();
-require_once '../config/db.php';
-
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'loja') die("Acesso negado.");
+require_once 'api_base.php';
+exigirAutenticacao('loja');
 
 $loja_id = $_SESSION['usuario_id'];
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);

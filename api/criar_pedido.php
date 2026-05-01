@@ -1,12 +1,8 @@
 <?php
-session_start();
-require_once '../config/db.php';
+require_once 'api_base.php';
 $systemConfig = require_once '../config/system.php';
 require_once 'helpers.php';
-
-if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'loja') {
-    die("Acesso negado.");
-}
+exigirAutenticacao('loja');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $loja_id = $_SESSION['usuario_id'];
@@ -54,9 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$loja_id, $produto, $descricao, $imagens_json]);
 
+        registrarAcaoBackend('Criar pedido');
         header('Location: ../dashboard-loja/index.php?status=sucesso');
         exit();
     } catch (PDOException $e) {
+        registrarAcaoBackend('Falha ao criar pedido: ' . $e->getMessage());
         header('Location: ../dashboard-loja/index.php?status=erro_db');
         exit();
     }
