@@ -37,6 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 unlink('../' . $foto_caminho);
             }
             $foto_caminho = str_replace('../', '', $uploadResult['path']);
+        } elseif (isset($uploadResult['error'])) {
+            registrarAcaoBackend('Falha ao atualizar foto do fornecedor ID ' . $id_fornecedor . ': ' . $uploadResult['error']);
+            header('Location: ../dashboard-loja/fornecedores.php?status=erro_arquivo');
+            exit();
         }
     }
 

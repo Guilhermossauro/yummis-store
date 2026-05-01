@@ -60,33 +60,51 @@ $maxMB = $systemConfig['storage_limit_mb'];
 $storagePercentage = ($maxMB > 0) ? min(100, round(($usedMB / $maxMB) * 100, 1)) : 0;
 $usedGB = round($usedMB / 1024, 2);
 $maxGB = round($maxMB / 1024, 2);
+
+$hasPropostas = true;
+$hasDataEnvioProposta = tableHasColumn($pdo, 'propostas', 'data_envio');
+$hasDataCriacaoProposta = tableHasColumn($pdo, 'propostas', 'data_criacao');
+$proposalDateField = $hasDataEnvioProposta ? 'pr.data_envio' : ($hasDataCriacaoProposta ? 'pr.data_criacao' : 'NULL');
+$proposalOrderField = $hasDataEnvioProposta ? 'pr.data_envio' : ($hasDataCriacaoProposta ? 'pr.data_criacao' : 'pr.id');
+$kpi_propostas = 0;
+$propostas_recebidas = [];
+
 // 2. Buscas no Banco
 try {
     $stmt = $pdo->prepare("SELECT * FROM pedidos WHERE loja_id = ? ORDER BY data_criacao DESC LIMIT 10");
     $stmt->execute([$loja_id]);
     $pedidos = $stmt->fetchAll();
 
-    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM pedidos WHERE loja_id = $loja_id");
+    $stmtTotal = $pdo->prepare("SELECT COUNT(*) FROM pedidos WHERE loja_id = ?");
+    $stmtTotal->execute([$loja_id]);
     $kpi_total = $stmtTotal->fetchColumn();
 
-    $stmtAbertos = $pdo->query("SELECT COUNT(*) FROM pedidos WHERE loja_id = $loja_id AND status = 'aberto'");
+    $stmtAbertos = $pdo->prepare("SELECT COUNT(*) FROM pedidos WHERE loja_id = ? AND status = 'aberto'");
+    $stmtAbertos->execute([$loja_id]);
     $kpi_abertos = $stmtAbertos->fetchColumn();
 
-    $stmtPropostas = $pdo->prepare("SELECT COUNT(p.id) FROM propostas p JOIN pedidos ped ON p.pedido_id = ped.id WHERE ped.loja_id = ?");
-    $stmtPropostas->execute([$loja_id]);
-    $kpi_propostas = $stmtPropostas->fetchColumn();
+    if ($hasPropostas) {
+        try {
+            $stmtPropostas = $pdo->prepare("SELECT COUNT(p.id) FROM propostas p JOIN pedidos ped ON p.pedido_id = ped.id WHERE ped.loja_id = ?");
+            $stmtPropostas->execute([$loja_id]);
+            $kpi_propostas = $stmtPropostas->fetchColumn();
 
-    // Buscar propostas recebidas recentes
-    $stmtPropostasRecebidas = $pdo->prepare("
-        SELECT pr.*, p.produto_nome, f.nome as fornecedor_nome, f.email as fornecedor_email
-        FROM propostas pr
-        JOIN pedidos p ON pr.pedido_id = p.id
-        JOIN usuarios f ON pr.fornecedor_id = f.id
-        WHERE p.loja_id = ?
-        ORDER BY pr.data_envio DESC LIMIT 10
-    ");
-    $stmtPropostasRecebidas->execute([$loja_id]);
-    $propostas_recebidas = $stmtPropostasRecebidas->fetchAll();
+            // Buscar propostas recebidas recentes
+            $stmtPropostasRecebidas = $pdo->prepare("
+                SELECT pr.*, {$proposalDateField} AS data_envio, p.produto_nome, f.nome as fornecedor_nome, f.email as fornecedor_email
+                FROM propostas pr
+                JOIN pedidos p ON pr.pedido_id = p.id
+                JOIN usuarios f ON pr.fornecedor_id = f.id
+                WHERE p.loja_id = ?
+                ORDER BY {$proposalOrderField} DESC LIMIT 10
+            ");
+            $stmtPropostasRecebidas->execute([$loja_id]);
+            $propostas_recebidas = $stmtPropostasRecebidas->fetchAll();
+        } catch (PDOException $inner) {
+            $kpi_propostas = 0;
+            $propostas_recebidas = [];
+        }
+    }
 
 } catch (PDOException $e) { die("Erro ao carregar dados."); }
 ?>
@@ -126,7 +144,7 @@ try {
                     <span><?php echo $storagePercentage; ?>%</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: <?php echo $storagePercentage; ?>%;"></div>
+                    <div class="progress-fill" data-percentage="<?php echo $storagePercentage; ?>%"></div>
                 </div>
                 <small><?php echo $usedGB; ?> GB de <?php echo $maxGB; ?> GB usados</small>
             </div>
@@ -193,12 +211,12 @@ try {
                     <div class="storage-circular glass-panel">
                         <h4>Storage Details</h4>
                         <div class="circle-wrap">
-                            <div class="circle">
-                                <div class="mask full" style="transform: rotate(<?php echo ($storagePercentage * 1.8); ?>deg);">
-                                    <div class="fill" style="transform: rotate(<?php echo ($storagePercentage * 1.8); ?>deg);"></div>
+                            <div class="circle" data-rotation="<?php echo ($storagePercentage * 1.8); ?>">
+                                <div class="mask full">
+                                    <div class="fill"></div>
                                 </div>
                                 <div class="mask half">
-                                    <div class="fill" style="transform: rotate(<?php echo ($storagePercentage * 1.8); ?>deg);"></div>
+                                    <div class="fill"></div>
                                 </div>
                                 <div class="inside-circle">
                                     <div class="perc"><?php echo $storagePercentage; ?>%</div>
@@ -275,7 +293,7 @@ try {
                                             <div class="proposta-meta">
                                                 <span>Fornecedor: <?php echo htmlspecialchars($proposta['fornecedor_nome']); ?></span>
                                                 <span>Valor: R$ <?php echo number_format($proposta['valor'], 2, ',', '.'); ?></span>
-                                                <span>Prazo: <?php echo $proposta['prazo']; ?> dias</span>
+                                                <span>Prazo: <?php echo isset($proposta['prazo']) ? ((int) $proposta['prazo'] . ' dias') : 'Nao informado'; ?></span>
                                             </div>
                                         </div>
                                         <div class="proposta-actions">
@@ -293,7 +311,7 @@ try {
             </main>
 
             <!-- Seção de Propostas (Oculto inicialmente) -->
-            <section id="propostas" class="content-section" style="display: none;">
+            <section id="propostas" class="content-section hidden">
                 <div class="section-header">
                     <h2>Propostas Recebidas</h2>
                     <button onclick="showSection('dashboard')" class="btn-secondary">Voltar ao Dashboard</button>
@@ -301,19 +319,25 @@ try {
 
                 <div class="propostas-grid">
                     <?php
-                    // Buscar todas as propostas agrupadas por pedido
-                    $stmtPedidosComPropostas = $pdo->prepare("
-                        SELECT DISTINCT p.id, p.produto_nome, p.descricao, p.status as pedido_status,
-                               COUNT(pr.id) as num_propostas
-                        FROM pedidos p
-                        LEFT JOIN propostas pr ON p.id = pr.pedido_id
-                        WHERE p.loja_id = ?
-                        GROUP BY p.id
-                        HAVING num_propostas > 0
-                        ORDER BY p.data_criacao DESC
-                    ");
-                    $stmtPedidosComPropostas->execute([$loja_id]);
-                    $pedidos_com_propostas = $stmtPedidosComPropostas->fetchAll();
+                    $pedidos_com_propostas = [];
+                    if ($hasPropostas) {
+                        try {
+                            $stmtPedidosComPropostas = $pdo->prepare("
+                                SELECT DISTINCT p.id, p.produto_nome, p.descricao, p.status as pedido_status,
+                                       COUNT(pr.id) as num_propostas
+                                FROM pedidos p
+                                LEFT JOIN propostas pr ON p.id = pr.pedido_id
+                                WHERE p.loja_id = ?
+                                GROUP BY p.id
+                                HAVING num_propostas > 0
+                                ORDER BY p.data_criacao DESC
+                            ");
+                            $stmtPedidosComPropostas->execute([$loja_id]);
+                            $pedidos_com_propostas = $stmtPedidosComPropostas->fetchAll();
+                        } catch (PDOException $inner) {
+                            $pedidos_com_propostas = [];
+                        }
+                    }
                     ?>
 
                     <?php foreach ($pedidos_com_propostas as $pedido): ?>
@@ -328,15 +352,20 @@ try {
 
                             <div class="propostas-comparison">
                                 <?php
-                                $stmtPropostasPedido = $pdo->prepare("
-                                    SELECT pr.*, f.nome as fornecedor_nome, f.email as fornecedor_email
-                                    FROM propostas pr
-                                    JOIN usuarios f ON pr.fornecedor_id = f.id
-                                    WHERE pr.pedido_id = ?
-                                    ORDER BY pr.valor ASC
-                                ");
-                                $stmtPropostasPedido->execute([$pedido['id']]);
-                                $propostas_pedido = $stmtPropostasPedido->fetchAll();
+                                $propostas_pedido = [];
+                                try {
+                                    $stmtPropostasPedido = $pdo->prepare("
+                                        SELECT pr.*, f.nome as fornecedor_nome, f.email as fornecedor_email
+                                        FROM propostas pr
+                                        JOIN usuarios f ON pr.fornecedor_id = f.id
+                                        WHERE pr.pedido_id = ?
+                                        ORDER BY pr.valor ASC
+                                    ");
+                                    $stmtPropostasPedido->execute([$pedido['id']]);
+                                    $propostas_pedido = $stmtPropostasPedido->fetchAll();
+                                } catch (PDOException $inner) {
+                                    $propostas_pedido = [];
+                                }
                                 ?>
 
                                 <?php foreach ($propostas_pedido as $index => $prop): ?>
@@ -361,16 +390,17 @@ try {
                                             </div>
                                             <div class="detail-item">
                                                 <span class="label">Prazo:</span>
-                                                <span class="value"><?php echo $prop['prazo']; ?> dias</span>
+                                                <span class="value"><?php echo isset($prop['prazo']) ? ((int) $prop['prazo'] . ' dias') : 'Nao informado'; ?></span>
                                             </div>
                                             <div class="detail-item">
                                                 <span class="label">Status:</span>
-                                                <span class="status-badge <?php echo $prop['status']; ?>"><?php echo ucfirst($prop['status']); ?></span>
+                                                <?php $statusProposta = $prop['status'] ?? 'enviada'; ?>
+                                                <span class="status-badge <?php echo htmlspecialchars($statusProposta); ?>"><?php echo htmlspecialchars(ucfirst($statusProposta)); ?></span>
                                             </div>
                                         </div>
 
                                         <div class="comparison-observations">
-                                            <p><?php echo htmlspecialchars($prop['observacoes']); ?></p>
+                                            <p><?php echo htmlspecialchars($prop['observacoes'] ?? 'Sem observacoes.'); ?></p>
                                         </div>
 
                                         <?php if ($prop['arquivo_url']): ?>
@@ -441,7 +471,7 @@ try {
                     <div id="dropzone" class="dropzone-container">
                         <span class="dropzone-icon">+</span>
                         <p class="dropzone-text">Arraste as imagens aqui ou clique para selecionar</p>
-                        <input type="file" id="imagem_produto" name="imagens_produto[]" accept="image/*,video/*" multiple style="display: none;">
+                        <input type="file" id="imagem_produto" name="imagens_produto[]" accept="image/*,video/*" multiple class="hidden-input">
                     </div>
                     <div id="previewContainer" class="previews-grid"></div>
                 </div>
@@ -472,7 +502,7 @@ try {
                     <div id="dropzoneEdit" class="dropzone-container">
                         <span class="dropzone-icon">+</span>
                         <p class="dropzone-text">Arraste novas imagens ou altere as existentes</p>
-                        <input type="file" id="imagem_produto_edit" name="imagens_produto[]" accept="image/*,video/*" multiple style="display: none;">
+                        <input type="file" id="imagem_produto_edit" name="imagens_produto[]" accept="image/*,video/*" multiple class="hidden-input">
                     </div>
                     <div id="previewContainerEdit" class="previews-grid"></div>
                 </div>

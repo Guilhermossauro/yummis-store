@@ -24,6 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $uploadResult = processUploadAndConvertToWebp($_FILES['foto_perfil'], $dir_perfis, 5); // 5MB max para avatar
         if (isset($uploadResult['success'])) {
             $foto_caminho = str_replace('../', '', $uploadResult['path']); // Limpa o '../'
+        } elseif (isset($uploadResult['error'])) {
+            registrarAcaoBackend('Falha no upload da logo do fornecedor: ' . $uploadResult['error']);
+            header('Location: ../dashboard-loja/fornecedores.php?status=erro_arquivo');
+            exit();
         }
     }
 

@@ -1,3 +1,14 @@
+<?php
+require_once '../config/db.php';
+
+$mostrarCadastroInicial = false;
+try {
+    $stmtUsuarios = $pdo->query("SELECT COUNT(*) FROM usuarios");
+    $mostrarCadastroInicial = ((int) $stmtUsuarios->fetchColumn() === 0);
+} catch (PDOException $e) {
+    $mostrarCadastroInicial = false;
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -16,10 +27,12 @@
         <div class="error-msg"></div>
         
         <form action="../api/login_process.php" method="POST">
+            <?php if ($mostrarCadastroInicial): ?>
             <div class="form-group">
-                <label for="nome">Nome Completo (opcional)</label>
-                <input type="text" id="nome" name="nome" placeholder="Seu nome completo">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" name="nome" placeholder="Seu nome completo" required>
             </div>
+            <?php endif; ?>
             <div class="form-group">
                 <label for="email">E-mail de Acesso</label>
                 <input type="email" id="email" name="email" placeholder="nome@empresa.com.br" required>

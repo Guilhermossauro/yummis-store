@@ -54,9 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'size' => $_FILES['anexos']['size'][$i]
                     ];
 
-                    $uploadResult = processUploadAndConvertToWebp($fileArray, $dir_anexos, 10); // 10MB max
+                    $uploadResult = processProposalAttachment($fileArray, $dir_anexos, 10); // 10MB max
                     if (isset($uploadResult['success'])) {
                         $anexos_paths[] = str_replace('../', '', $uploadResult['path']);
+                    } elseif (isset($uploadResult['error'])) {
+                        registrarAcaoBackend('Falha em anexo da proposta: ' . $uploadResult['error']);
                     }
                 }
             }
@@ -64,11 +66,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $anexos_json = !empty($anexos_paths) ? json_encode($anexos_paths) : null;
 
-        // Inserir proposta
-        $sql = "INSERT INTO propostas (pedido_id, fornecedor_id, valor, prazo, observacoes, arquivo_url, status, data_envio) 
-                VALUES (?, ?, ?, ?, ?, ?, 'enviada', NOW())";
+        // Inserir proposta com compatibilidade de schema
+        $columns = ['pedido_id', 'fornecedor_id', 'valor'];
+        $placeholders = ['?', '?', '?'];
+        $params = [$pedido_id, $fornecedor_id, $valor];
+
+        if (tableHasColumn($pdo, 'propostas', 'prazo')) {
+            $columns[] = 'prazo';
+            $placeholders[] = '?';
+            $params[] = $prazo;
+        }
+
+        if (tableHasColumn($pdo, 'propostas', 'observacoes')) {
+            $observacoesComPrazo = trim("Prazo: {$prazo} dias\n" . ($observacoes ?? ''));
+            $columns[] = 'observacoes';
+            $placeholders[] = '?';
+            $params[] = $observacoesComPrazo;
+        }
+
+        if (tableHasColumn($pdo, 'propostas', 'arquivo_url')) {
+            $columns[] = 'arquivo_url';
+            $placeholders[] = '?';
+            $params[] = $anexos_json;
+        }
+
+        if (tableHasColumn($pdo, 'propostas', 'status')) {
+            $columns[] = 'status';
+            $placeholders[] = '?';
+            $params[] = 'enviada';
+        }
+
+        if (tableHasColumn($pdo, 'propostas', 'data_envio')) {
+            $columns[] = 'data_envio';
+            $placeholders[] = 'NOW()';
+        }
+
+        $sql = 'INSERT INTO propostas (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $placeholders) . ')';
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$pedido_id, $fornecedor_id, $valor, $prazo, $observacoes, $anexos_json]);
+        $stmt->execute($params);
 
         registrarAcaoBackend('Proposta enviada para pedido ID ' . $pedido_id . ' com valor R$ ' . number_format($valor, 2));
         echo json_encode(['success' => true]);

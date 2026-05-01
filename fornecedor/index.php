@@ -12,26 +12,42 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'fornecedor
 $fornecedor_id = $_SESSION['usuario_id'];
 $nome_fornecedor = $_SESSION['usuario_nome'];
 
+$hasPropostas = true;
+$hasDataEnvio = tableHasColumn($pdo, 'propostas', 'data_envio');
+$hasDataCriacaoProposta = tableHasColumn($pdo, 'propostas', 'data_criacao');
+$proposalDateField = $hasDataEnvio ? 'pr.data_envio' : ($hasDataCriacaoProposta ? 'pr.data_criacao' : 'NULL');
+$proposalOrderField = $hasDataEnvio ? 'pr.data_envio' : ($hasDataCriacaoProposta ? 'pr.data_criacao' : 'pr.id');
+$kpi_total_propostas = 0;
+$kpi_ganhas = 0;
+$kpi_taxa_aprovacao = 0;
+$kpi_valor_negociado = 0;
+$minhas_propostas = [];
+
 // 1. KPIs do Fornecedor
-try {
-    // Total de propostas enviadas
-    $stmtTotalPropostas = $pdo->prepare("SELECT COUNT(*) FROM propostas WHERE fornecedor_id = ?");
-    $stmtTotalPropostas->execute([$fornecedor_id]);
-    $kpi_total_propostas = $stmtTotalPropostas->fetchColumn();
+if ($hasPropostas) {
+    try {
+        // Total de propostas enviadas
+        $stmtTotalPropostas = $pdo->prepare("SELECT COUNT(*) FROM propostas WHERE fornecedor_id = ?");
+        $stmtTotalPropostas->execute([$fornecedor_id]);
+        $kpi_total_propostas = $stmtTotalPropostas->fetchColumn();
 
-    // Taxa de aprovação (ganhas / total)
-    $stmtGanhas = $pdo->prepare("SELECT COUNT(*) FROM propostas WHERE fornecedor_id = ? AND status = 'ganha'");
-    $stmtGanhas->execute([$fornecedor_id]);
-    $kpi_ganhas = $stmtGanhas->fetchColumn();
-    $kpi_taxa_aprovacao = $kpi_total_propostas > 0 ? round(($kpi_ganhas / $kpi_total_propostas) * 100, 1) : 0;
+        if (tableHasColumn($pdo, 'propostas', 'status')) {
+            // Taxa de aprovação (aprovadas / total)
+            $stmtGanhas = $pdo->prepare("SELECT COUNT(*) FROM propostas WHERE fornecedor_id = ? AND status = 'aprovada'");
+            $stmtGanhas->execute([$fornecedor_id]);
+            $kpi_ganhas = $stmtGanhas->fetchColumn();
+            $kpi_taxa_aprovacao = $kpi_total_propostas > 0 ? round(($kpi_ganhas / $kpi_total_propostas) * 100, 1) : 0;
 
-    // Valor total negociado (soma dos valores das propostas ganhas)
-    $stmtValor = $pdo->prepare("SELECT SUM(valor) FROM propostas WHERE fornecedor_id = ? AND status = 'ganha'");
-    $stmtValor->execute([$fornecedor_id]);
-    $kpi_valor_negociado = $stmtValor->fetchColumn() ?? 0;
-
-} catch (PDOException $e) {
-    die("Erro ao carregar KPIs.");
+            // Valor total negociado (soma dos valores das propostas aprovadas)
+            $stmtValor = $pdo->prepare("SELECT SUM(valor) FROM propostas WHERE fornecedor_id = ? AND status = 'aprovada'");
+            $stmtValor->execute([$fornecedor_id]);
+            $kpi_valor_negociado = $stmtValor->fetchColumn() ?? 0;
+        }
+    } catch (PDOException $e) {
+        $kpi_ganhas = 0;
+        $kpi_taxa_aprovacao = 0;
+        $kpi_valor_negociado = 0;
+    }
 }
 
 // 2. Feed de Cotações Abertas (pedidos abertos de todas as lojas)
@@ -43,19 +59,21 @@ try {
 }
 
 // 3. Minhas Propostas Recentes
-try {
-    $stmtMinhasPropostas = $pdo->prepare("
-        SELECT pr.*, p.produto_nome, p.descricao, u.nome as loja_nome
-        FROM propostas pr
-        JOIN pedidos p ON pr.pedido_id = p.id
-        JOIN usuarios u ON p.loja_id = u.id
-        WHERE pr.fornecedor_id = ?
-        ORDER BY pr.data_envio DESC LIMIT 10
-    ");
-    $stmtMinhasPropostas->execute([$fornecedor_id]);
-    $minhas_propostas = $stmtMinhasPropostas->fetchAll();
-} catch (PDOException $e) {
-    $minhas_propostas = [];
+if ($hasPropostas) {
+    try {
+        $stmtMinhasPropostas = $pdo->prepare("
+            SELECT pr.*, {$proposalDateField} AS data_envio, p.produto_nome, p.descricao, u.nome as loja_nome
+            FROM propostas pr
+            JOIN pedidos p ON pr.pedido_id = p.id
+            JOIN usuarios u ON p.loja_id = u.id
+            WHERE pr.fornecedor_id = ?
+            ORDER BY {$proposalOrderField} DESC LIMIT 10
+        ");
+        $stmtMinhasPropostas->execute([$fornecedor_id]);
+        $minhas_propostas = $stmtMinhasPropostas->fetchAll();
+    } catch (PDOException $e) {
+        $minhas_propostas = [];
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -169,13 +187,17 @@ try {
                             </div>
                         <?php else: ?>
                             <?php foreach ($minhas_propostas as $proposta): ?>
+                                <?php
+                                $statusProposta = $proposta['status'] ?? 'enviada';
+                                $dataAtividade = !empty($proposta['data_envio']) ? date('d/m H:i', strtotime($proposta['data_envio'])) : '-';
+                                ?>
                                 <div class="activity-item">
                                     <div class="activity-icon">📤</div>
                                     <div class="activity-content">
                                         <div class="activity-title">Proposta enviada para "<?php echo htmlspecialchars($proposta['produto_nome']); ?>"</div>
-                                        <div class="activity-meta">Loja: <?php echo htmlspecialchars($proposta['loja_nome']); ?> • Status: <?php echo htmlspecialchars($proposta['status']); ?></div>
+                                        <div class="activity-meta">Loja: <?php echo htmlspecialchars($proposta['loja_nome']); ?> • Status: <?php echo htmlspecialchars($statusProposta); ?></div>
                                     </div>
-                                    <div class="activity-time"><?php echo date('d/m H:i', strtotime($proposta['data_envio'])); ?></div>
+                                    <div class="activity-time"><?php echo $dataAtividade; ?></div>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -252,20 +274,21 @@ try {
                         </div>
                     <?php else: ?>
                         <?php foreach ($minhas_propostas as $proposta): ?>
+                            <?php $statusProposta = $proposta['status'] ?? 'enviada'; ?>
                             <div class="proposta-card">
                                 <div class="proposta-header">
                                     <h3><?php echo htmlspecialchars($proposta['produto_nome']); ?></h3>
-                                    <div class="proposta-status status-<?php echo $proposta['status']; ?>">
-                                        <?php echo htmlspecialchars(ucfirst($proposta['status'])); ?>
+                                    <div class="proposta-status status-<?php echo htmlspecialchars($statusProposta); ?>">
+                                        <?php echo htmlspecialchars(ucfirst($statusProposta)); ?>
                                     </div>
                                 </div>
                                 <div class="proposta-content">
                                     <div class="proposta-meta">
                                         <span>Loja: <?php echo htmlspecialchars($proposta['loja_nome']); ?></span>
                                         <span>Valor: R$ <?php echo number_format($proposta['valor'], 2, ',', '.'); ?></span>
-                                        <span>Prazo: <?php echo $proposta['prazo']; ?> dias</span>
+                                        <span>Prazo: <?php echo isset($proposta['prazo']) ? ((int) $proposta['prazo'] . ' dias') : 'Nao informado'; ?></span>
                                     </div>
-                                    <p><?php echo htmlspecialchars($proposta['observacoes']); ?></p>
+                                    <p><?php echo htmlspecialchars($proposta['observacoes'] ?? 'Sem observacoes.'); ?></p>
                                 </div>
                                 <div class="proposta-actions">
                                     <button class="btn-secondary" onclick="editarProposta(<?php echo $proposta['id']; ?>)">Editar</button>
