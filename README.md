@@ -42,3 +42,14 @@ Esta etapa organiza o fluxo de fornecedores e assegura que tudo seja tratado via
 
 Esta etapa aumenta a eficiência de decisão de compra e garante consistência no processo de aprovação de propostas.
 
+
+## Etapa 3: Autenticação e Configurações Base
+
+- Validação de sessão em todas as páginas e APIs via session_start().
+- Meu Perfil para edição de dados, troca de senha e upload de logo ou foto.
+- Notificações in-app via sininho para alertas de nova proposta e cotações encerradas.
+
+### Justificativa
+
+Estes recursos são a base de uso diário e segurança, garantindo controle de acesso e experiência personalizada para cada usuário.
+
