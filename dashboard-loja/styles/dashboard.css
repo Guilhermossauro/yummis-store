@@ -122,3 +122,292 @@ td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.02); }
 .table-actions { display: flex; gap: 8px; }
 .btn-icon { background: rgba(255,255,255,0.05); border: none; padding: 8px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
 .btn-icon:hover { background: rgba(255,255,255,0.1); transform: scale(1.1); }
+
+/* ================= ESTILOS PARA PROPOSTAS ================= */
+
+.propostas-section {
+    grid-column: span 2;
+    margin-top: 20px;
+}
+
+.propostas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.proposta-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.proposta-info {
+    flex: 1;
+}
+
+.proposta-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+.proposta-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.proposta-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-sm.primary { background: var(--accent-blue); color: white; }
+.btn-sm.success { background: var(--accent-green); color: white; }
+.btn-sm.danger { background: var(--accent-red); color: white; }
+.btn-sm.secondary { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+
+.btn-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Seção completa de propostas */
+.content-section {
+    padding: 20px;
+}
+
+.propostas-grid {
+    display: grid;
+    gap: 30px;
+}
+
+.pedido-propostas-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.pedido-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pedido-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.pedido-meta {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.propostas-comparison {
+    display: grid;
+    gap: 20px;
+}
+
+.proposta-comparison-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+}
+
+.proposta-comparison-item.best-price {
+    border-color: var(--accent-green);
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.best-badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: var(--accent-green);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.fornecedor-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.fornecedor-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: white;
+}
+
+.fornecedor-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.fornecedor-email {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.comparison-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-item .label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.detail-item .value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge.pendente { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+.status-badge.aprovada { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+.status-badge.rejeitada { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+.comparison-observations {
+    margin-bottom: 15px;
+}
+
+.comparison-observations p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.comparison-attachments {
+    margin-bottom: 15px;
+}
+
+.attachments-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    display: block;
+}
+
+.attachment-link {
+    display: inline-block;
+    margin-right: 10px;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.attachment-link:hover {
+    text-decoration: underline;
+}
+
+.comparison-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.comparison-summary {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.savings-amount {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-green);
+    margin-bottom: 5px;
+}
+
+.savings-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.empty-text {
+    font-size: 1.1rem;
+}
+
+/* Botão link */
+.btn-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}

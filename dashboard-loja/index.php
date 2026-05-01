@@ -75,6 +75,19 @@ try {
     $stmtPropostas = $pdo->prepare("SELECT COUNT(p.id) FROM propostas p JOIN pedidos ped ON p.pedido_id = ped.id WHERE ped.loja_id = ?");
     $stmtPropostas->execute([$loja_id]);
     $kpi_propostas = $stmtPropostas->fetchColumn();
+
+    // Buscar propostas recebidas recentes
+    $stmtPropostasRecebidas = $pdo->prepare("
+        SELECT pr.*, p.produto_nome, f.nome as fornecedor_nome, f.email as fornecedor_email
+        FROM propostas pr
+        JOIN pedidos p ON pr.pedido_id = p.id
+        JOIN usuarios f ON pr.fornecedor_id = f.id
+        WHERE p.loja_id = ?
+        ORDER BY pr.data_envio DESC LIMIT 10
+    ");
+    $stmtPropostasRecebidas->execute([$loja_id]);
+    $propostas_recebidas = $stmtPropostasRecebidas->fetchAll();
+
 } catch (PDOException $e) { die("Erro ao carregar dados."); }
 ?>
 <!DOCTYPE html>
@@ -101,6 +114,7 @@ try {
             <nav class="menu">
                 <a href="index.php" class="active"><i class="icon">📊</i> Dashboard</a>
                 <a href="fornecedores.php"><i class="icon">🏢</i> Fornecedores</a>
+                <a href="#propostas" onclick="showSection('propostas')"><i class="icon">📋</i> Propostas</a>
                 <a href="chat.php"><i class="icon">💬</i> Mensagens</a>
                 <a href="perfil.php"><i class="icon">⚙️</i> Perfil</a>
             </nav>
@@ -241,8 +255,166 @@ try {
                         </div>
                     </div>
 
+                    <!-- Propostas Recebidas -->
+                    <div class="propostas-section glass-panel">
+                        <div class="section-header">
+                            <h4>Propostas Recebidas</h4>
+                            <a href="#propostas" onclick="showSection('propostas')" class="btn-link">Ver Todas</a>
+                        </div>
+                        <div class="propostas-list">
+                            <?php if (empty($propostas_recebidas)): ?>
+                                <div class="empty-state">
+                                    <div class="empty-icon">📋</div>
+                                    <div class="empty-text">Nenhuma proposta recebida ainda</div>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($propostas_recebidas as $proposta): ?>
+                                    <div class="proposta-item">
+                                        <div class="proposta-info">
+                                            <div class="proposta-title"><?php echo htmlspecialchars($proposta['produto_nome']); ?></div>
+                                            <div class="proposta-meta">
+                                                <span>Fornecedor: <?php echo htmlspecialchars($proposta['fornecedor_nome']); ?></span>
+                                                <span>Valor: R$ <?php echo number_format($proposta['valor'], 2, ',', '.'); ?></span>
+                                                <span>Prazo: <?php echo $proposta['prazo']; ?> dias</span>
+                                            </div>
+                                        </div>
+                                        <div class="proposta-actions">
+                                            <button class="btn-sm primary" onclick="compararPropostas(<?php echo $proposta['pedido_id']; ?>)">Comparar</button>
+                                            <button class="btn-sm success" onclick="aprovarProposta(<?php echo $proposta['id']; ?>)">Aprovar</button>
+                                            <button class="btn-sm danger" onclick="rejeitarProposta(<?php echo $proposta['id']; ?>)">Rejeitar</button>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
                 </div>
             </main>
+
+            <!-- Seção de Propostas (Oculto inicialmente) -->
+            <section id="propostas" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>Propostas Recebidas</h2>
+                    <button onclick="showSection('dashboard')" class="btn-secondary">Voltar ao Dashboard</button>
+                </div>
+
+                <div class="propostas-grid">
+                    <?php
+                    // Buscar todas as propostas agrupadas por pedido
+                    $stmtPedidosComPropostas = $pdo->prepare("
+                        SELECT DISTINCT p.id, p.produto_nome, p.descricao, p.status as pedido_status,
+                               COUNT(pr.id) as num_propostas
+                        FROM pedidos p
+                        LEFT JOIN propostas pr ON p.id = pr.pedido_id
+                        WHERE p.loja_id = ?
+                        GROUP BY p.id
+                        HAVING num_propostas > 0
+                        ORDER BY p.data_criacao DESC
+                    ");
+                    $stmtPedidosComPropostas->execute([$loja_id]);
+                    $pedidos_com_propostas = $stmtPedidosComPropostas->fetchAll();
+                    ?>
+
+                    <?php foreach ($pedidos_com_propostas as $pedido): ?>
+                        <div class="pedido-propostas-card">
+                            <div class="pedido-header">
+                                <h3><?php echo htmlspecialchars($pedido['produto_nome']); ?></h3>
+                                <div class="pedido-meta">
+                                    <span><?php echo $pedido['num_propostas']; ?> propostas recebidas</span>
+                                    <span class="status <?php echo $pedido['pedido_status']; ?>"><?php echo ucfirst($pedido['pedido_status']); ?></span>
+                                </div>
+                            </div>
+
+                            <div class="propostas-comparison">
+                                <?php
+                                $stmtPropostasPedido = $pdo->prepare("
+                                    SELECT pr.*, f.nome as fornecedor_nome, f.email as fornecedor_email
+                                    FROM propostas pr
+                                    JOIN usuarios f ON pr.fornecedor_id = f.id
+                                    WHERE pr.pedido_id = ?
+                                    ORDER BY pr.valor ASC
+                                ");
+                                $stmtPropostasPedido->execute([$pedido['id']]);
+                                $propostas_pedido = $stmtPropostasPedido->fetchAll();
+                                ?>
+
+                                <?php foreach ($propostas_pedido as $index => $prop): ?>
+                                    <div class="proposta-comparison-item <?php echo $index === 0 ? 'best-price' : ''; ?>">
+                                        <div class="comparison-header">
+                                            <div class="fornecedor-info">
+                                                <div class="fornecedor-avatar"><?php echo substr($prop['fornecedor_nome'], 0, 1); ?></div>
+                                                <div>
+                                                    <div class="fornecedor-name"><?php echo htmlspecialchars($prop['fornecedor_nome']); ?></div>
+                                                    <div class="fornecedor-email"><?php echo htmlspecialchars($prop['fornecedor_email']); ?></div>
+                                                </div>
+                                            </div>
+                                            <?php if ($index === 0): ?>
+                                                <div class="best-badge">Melhor Preço</div>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <div class="comparison-details">
+                                            <div class="detail-item">
+                                                <span class="label">Valor:</span>
+                                                <span class="value">R$ <?php echo number_format($prop['valor'], 2, ',', '.'); ?></span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="label">Prazo:</span>
+                                                <span class="value"><?php echo $prop['prazo']; ?> dias</span>
+                                            </div>
+                                            <div class="detail-item">
+                                                <span class="label">Status:</span>
+                                                <span class="status-badge <?php echo $prop['status']; ?>"><?php echo ucfirst($prop['status']); ?></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="comparison-observations">
+                                            <p><?php echo htmlspecialchars($prop['observacoes']); ?></p>
+                                        </div>
+
+                                        <?php if ($prop['arquivo_url']): ?>
+                                            <div class="comparison-attachments">
+                                                <span class="attachments-label">Anexos:</span>
+                                                <?php
+                                                $anexos = json_decode($prop['arquivo_url'], true);
+                                                if (is_array($anexos)):
+                                                ?>
+                                                    <?php foreach ($anexos as $anexo): ?>
+                                                        <a href="../<?php echo htmlspecialchars($anexo); ?>" target="_blank" class="attachment-link">📎 Anexo</a>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <div class="comparison-actions">
+                                            <button class="btn-sm success" onclick="aprovarProposta(<?php echo $prop['id']; ?>, <?php echo $pedido['id']; ?>)">Aprovar</button>
+                                            <button class="btn-sm danger" onclick="rejeitarProposta(<?php echo $prop['id']; ?>)">Rejeitar</button>
+                                            <button class="btn-sm secondary" onclick="contatarFornecedor(<?php echo $prop['fornecedor_id']; ?>)">Contatar</button>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+
+                                <?php if (count($propostas_pedido) > 1): ?>
+                                    <div class="comparison-summary">
+                                        <div class="savings-calc">
+                                            <?php
+                                            $menor_valor = $propostas_pedido[0]['valor'];
+                                            $maior_valor = end($propostas_pedido)['valor'];
+                                            $economia = $maior_valor - $menor_valor;
+                                            $percentual = $maior_valor > 0 ? round(($economia / $maior_valor) * 100, 1) : 0;
+                                            ?>
+                                            <div class="savings-amount">Economia: R$ <?php echo number_format($economia, 2, ',', '.'); ?> (<?php echo $percentual; ?>%)</div>
+                                            <div class="savings-text">Comparado com a proposta mais cara</div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
         </div>
     </div>
 
