@@ -75,3 +75,16 @@ A negociação avançada melhora transparência e compliance, permitindo que tod
 
 Estas melhorias visam acelerar processos repetitivos e transformar o sistema em uma experiência mais mobile-friendly e produtiva.
 
+
+## Etapa 6: Relacionamento, Confiança e Relatórios
+
+- Sistema de rating 1-5 estrelas para a loja avaliar o fornecedor após entrega.
+- Perfil público do fornecedor com média de notas e ficha técnica.
+- Filtros avançados e paginação para busca inteligente em pedidos e propostas.
+- Exportação de relatórios CSV/Excel para gastos e vendas.
+- Modo Admin com visibilidade global, usuários banidos e acesso a logs.
+
+### Justificativa
+
+Esses recursos fortalecem confiança, suporte comercial e governança SaaS para operações B2B de alto valor.
+
