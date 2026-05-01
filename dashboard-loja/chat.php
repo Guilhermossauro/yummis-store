@@ -98,12 +98,12 @@ try {
                             <p>Selecione um fornecedor ao lado para iniciar a conversa.</p>
                         </div>
 
-                        <div id="activeChat" style="display: none; height: 100%; flex-direction: column; position: relative;">
+                        <div id="activeChat" class="hidden chat-active">
                             <div class="chat-header">
                                 <img src="" alt="Foto" id="chatHeaderAvatar" class="contact-avatar">
                                 <div>
-                                    <strong style="color: white; display: block;" id="chatHeaderName">Nome do Fornecedor</strong>
-                                    <span style="font-size: 0.8rem; color: var(--success);">Fornecedor Ativo</span>
+                                    <strong id="chatHeaderName">Nome do Fornecedor</strong>
+                                    <span class="chat-status">Fornecedor Ativo</span>
                                 </div>
                             </div>
                             
@@ -112,7 +112,7 @@ try {
                             </div>
 
                             <!-- PREVIEW DE RESPOSTA -->
-                            <div id="replyPreview" class="reply-preview" style="display: none;">
+                            <div id="replyPreview" class="reply-preview hidden">
                                 <div class="reply-content">
                                     <strong>Respondendo a:</strong>
                                     <span id="replyTextPreview">...</span>
@@ -135,13 +135,13 @@ try {
     </div>
 
     <!-- MENU DE CONTEXTO (Botão Direito) -->
-    <div id="chatContextMenu" class="context-menu" style="display: none;">
+    <div id="chatContextMenu" class="context-menu hidden">
         <button id="menuReply" class="menu-item">↩️ Responder</button>
         <button id="menuEdit" class="menu-item mine-only">✏️ Editar</button>
         <button id="menuDelete" class="menu-item mine-only text-danger">🗑️ Deletar</button>
     </div>
 
-    <script>const MEU_ID = <?php echo $loja_id; ?>;</script>
+    <div id="pageMetadata" data-meu-id="<?php echo $loja_id; ?>"></div>
     <script src="js/dashboard.js"></script>
     <script src="js/chat.js"></script>
 </body>

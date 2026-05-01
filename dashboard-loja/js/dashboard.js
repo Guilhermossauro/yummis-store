@@ -164,4 +164,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    function updateStorageDisplays() {
+        const progressFill = document.querySelector('.storage-box .progress-fill');
+        if (progressFill) {
+            progressFill.style.width = progressFill.dataset.percentage || '0%';
+        }
+
+        const circle = document.querySelector('.storage-circular .circle');
+        if (circle) {
+            const rotation = Number(circle.dataset.rotation) || 0;
+            const masks = circle.querySelectorAll('.mask.full, .mask.full .fill, .mask.half .fill');
+            masks.forEach((el) => {
+                el.style.transform = `rotate(${rotation}deg)`;
+            });
+        }
+    }
+
+    updateStorageDisplays();
 });

@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const pageMetadata = document.getElementById('pageMetadata');
+    const meuId = Number(pageMetadata?.dataset?.meuId || 0);
+
     const contacts = document.querySelectorAll('.contact-item');
     const emptyChat = document.getElementById('emptyChat');
     const activeChat = document.getElementById('activeChat');
@@ -33,8 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
             chatHeaderAvatar.src = contact.dataset.avatar;
             destinatarioIdInput.value = id;
 
-            emptyChat.style.display = 'none';
-            activeChat.style.display = 'flex';
+            emptyChat.classList.add('hidden');
+            activeChat.classList.remove('hidden');
 
             // Remove a bolinha vermelha e avisa o servidor que leu
             const badge = document.getElementById('badge-' + id);
@@ -91,12 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
             chatMessages.innerHTML = ''; 
 
             if(mensagens.length === 0) {
-                chatMessages.innerHTML = '<div style="text-align: center; color: #64748b; margin-top: 20px;">Nenhuma mensagem ainda. Mande um olá!</div>';
+                chatMessages.innerHTML = '<div class="empty-message">Nenhuma mensagem ainda. Mande um olá!</div>';
                 return;
             }
 
             mensagens.forEach(msg => {
-                const isMine = (parseInt(msg.remetente_id) === MEU_ID);
+                const isMine = (parseInt(msg.remetente_id) === meuId);
                 const classe = isMine ? 'sent' : 'received';
                 const dataFormatada = new Date(msg.data_envio).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
 
@@ -117,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${quoteHtml}
                         ${msg.mensagem}
                     </div>
-                    <div class="time">${dataFormatada} ${isMine && msg.lida == 1 ? '<span style="color:#0ea5e9;">✓✓</span>' : ''}</div>
+                    <div class="time">${dataFormatada} ${isMine && msg.lida == 1 ? '<span class="read-tick">✓✓</span>' : ''}</div>
                 `;
                 chatMessages.appendChild(div);
             });
@@ -143,10 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Esconde opções de editar/deletar se a mensagem for do fornecedor
             const btnMineOnly = document.querySelectorAll('.mine-only');
-            btnMineOnly.forEach(btn => btn.style.display = msgSelecionadaIsMine ? 'block' : 'none');
+            btnMineOnly.forEach(btn => btn.classList.toggle('hidden', !msgSelecionadaIsMine));
 
             // Posiciona o menu no mouse
-            contextMenu.style.display = 'block';
+            contextMenu.classList.remove('hidden');
             contextMenu.style.left = `${e.pageX}px`;
             contextMenu.style.top = `${e.pageY}px`;
         } else {
@@ -156,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('click', fecharMenu);
 
-    function fecharMenu() { contextMenu.style.display = 'none'; }
+    function fecharMenu() { contextMenu.classList.add('hidden'); }
 
     // ==========================================
     // AÇÕES DO MENU

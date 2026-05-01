@@ -118,6 +118,8 @@ if ($arquivo_selecionado && in_array($arquivo_selecionado, $arquivos_log)) {
         .keyword-user { color: #f59e0b; }
         .keyword-error { color: #ef4444; font-weight: bold; }
         .keyword-success { color: #22c55e; font-weight: bold; }
+        .log-empty { color: #555; padding: 10px; }
+        .btn-terminal-refresh { background: #333; color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -129,7 +131,7 @@ if ($arquivo_selecionado && in_array($arquivo_selecionado, $arquivos_log)) {
         </div>
         <ul class="log-list">
             <?php if (empty($arquivos_log)): ?>
-                <li style="color: #555; padding: 10px;">Nenhum log gerado ainda.</li>
+                <li class="log-empty">Nenhum log gerado ainda.</li>
             <?php else: ?>
                 <?php foreach ($arquivos_log as $arq): ?>
                     <li>
@@ -145,7 +147,7 @@ if ($arquivo_selecionado && in_array($arquivo_selecionado, $arquivos_log)) {
     <div class="terminal">
         <div class="terminal-header">
             <span>Visualizando: <strong><?php echo $arquivo_selecionado ?? 'Nenhum'; ?></strong></span>
-            <button onclick="window.location.reload()" style="background: #333; color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 4px;">Atualizar Terminal</button>
+            <button onclick="window.location.reload()" class="btn-terminal-refresh">Atualizar Terminal</button>
         </div>
         <div class="terminal-content" id="logContent"><?php echo $conteudo_log ?: 'Selecione um arquivo de log para visualizar...'; ?></div>
     </div>

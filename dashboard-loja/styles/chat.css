@@ -161,3 +161,13 @@
 .contacts-list::-webkit-scrollbar, .chat-messages::-webkit-scrollbar, .chat-input-area textarea::-webkit-scrollbar { width: 6px; }
 .contacts-list::-webkit-scrollbar-track, .chat-messages::-webkit-scrollbar-track { background: transparent; }
 .contacts-list::-webkit-scrollbar-thumb, .chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+.empty-message {
+    text-align: center;
+    color: #64748b;
+    margin-top: 20px;
+}
+
+.read-tick {
+    color: #0ea5e9;
+}

@@ -16,6 +16,10 @@
     --sidebar-width: 260px;
 }
 
+.hidden { display: none !important; }
+.hidden-input { display: none !important; }
+.modal-footer { margin-top: 20px; }
+
 body, html { 
     margin: 0; padding: 0; 
     font-family: 'Poppins', sans-serif; 
