@@ -19,11 +19,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Show selected section
             const sectionId = this.getAttribute('data-section');
-            document.getElementById(sectionId).classList.add('active');
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
 
             // Update page title
             const pageTitle = document.querySelector('.page-title');
-            pageTitle.textContent = this.textContent.trim();
+            if (pageTitle) {
+                pageTitle.textContent = this.textContent.trim();
+            }
         });
     });
 
@@ -31,15 +36,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
 
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('collapsed');
-    });
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+    }
 
     // Modal de proposta
     const propostaModal = document.getElementById('propostaModal');
     const propostaForm = document.getElementById('propostaForm');
+    const modalCloseBtn = document.querySelector('#propostaModal .modal-close');
 
-    propostaForm.addEventListener('submit', function(e) {
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', fecharModal);
+    }
+
+    if (propostaForm) {
+        propostaForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
         const formData = new FormData(this);
@@ -62,18 +75,20 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Erro:', error);
             alert('Erro ao enviar proposta');
         });
-    });
+        });
+    }
 });
 
 // Funções globais
 function enviarProposta(pedidoId) {
     document.getElementById('pedido_id').value = pedidoId;
-    document.getElementById('propostaModal').style.display = 'block';
+    document.getElementById('propostaModal').classList.add('active');
 }
 
 function fecharModal() {
-    document.getElementById('propostaModal').style.display = 'none';
-    document.getElementById('propostaForm').reset();
+    document.getElementById('propostaModal').classList.remove('active');
+    const form = document.getElementById('propostaForm');
+    if (form) form.reset();
 }
 
 function verDetalhes(pedidoId) {

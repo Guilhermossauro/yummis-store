@@ -1,5 +1,220 @@
 /* fornecedor/style.css */
 
+/* Layout base do portal fornecedor */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.nav-menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 15px;
+}
+
+.nav-item {
+    padding: 12px 15px;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: var(--accent-blue);
+    color: white;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.header {
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.page-title {
+    margin: 0;
+    font-weight: 700;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-btn {
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.06);
+    color: white;
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-btn .badge {
+    background: var(--accent-orange);
+    color: white;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+}
+
+.menu-toggle {
+    display: none;
+    border: 0;
+    background: transparent;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.content-section {
+    display: none;
+    padding: 0 30px 30px;
+}
+
+.content-section.active {
+    display: block;
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.kpi-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.kpi-label {
+    color: var(--text-muted);
+}
+
+.recent-activity {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.recent-activity h3 {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+
+.activity-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.activity-item:last-child {
+    border-bottom: 0;
+}
+
+.activity-title {
+    font-weight: 600;
+}
+
+.activity-meta,
+.activity-time {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.btn-secondary,
+.btn-danger {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fecaca;
+}
+
+.btn-secondary:hover,
+.btn-danger:hover {
+    transform: translateY(-1px);
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.25);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.user-details .user-name {
+    font-weight: 600;
+}
+
+.user-details .user-role {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.logout-btn {
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #fca5a5;
+    text-decoration: none;
+}
+
 /* Cotações Grid */
 .cotacoes-grid {
     display: grid;
@@ -165,6 +380,22 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+    .header {
+        padding: 15px;
+    }
+
+    .menu-toggle {
+        display: inline-flex;
+    }
+
+    .content-section {
+        padding: 0 15px 20px;
+    }
+
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
     .cotacoes-grid {
         grid-template-columns: 1fr;
     }

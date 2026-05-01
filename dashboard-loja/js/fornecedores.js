@@ -44,15 +44,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         function processarArquivo(file) {
-            if (file) {
-                // VERIFICAÇÃO DE SEGURANÇA: Só aceita imagem
-                if (file.type.startsWith('image/')) {
-                    arquivoUpload = file; 
-                    renderizarPreview();
-                } else {
-                    alert('⚠️ Formato inválido! Por favor, selecione apenas arquivos de imagem (PNG, JPG, WEBP) para a Logo.');
-                    if(fileInput) fileInput.value = ''; // Limpa o arquivo inválido da memória
-                }
+            if (!file) return;
+
+            const nome = (file.name || '').toLowerCase();
+            const extensaoValida = /\.(jpg|jpeg|png|gif|webp)$/i.test(nome);
+            const mimeValido = (file.type || '').startsWith('image/');
+
+            if (mimeValido || extensaoValida) {
+                arquivoUpload = file;
+                renderizarPreview();
+            } else {
+                alert('⚠️ Formato inválido! Por favor, selecione apenas arquivos de imagem (PNG, JPG, GIF ou WEBP).');
+                if (fileInput) fileInput.value = '';
             }
         }
 
@@ -67,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const imgUrl = URL.createObjectURL(arquivoUpload);
                 
                 div.innerHTML = `
-                    <img src="${imgUrl}" alt="Preview">
+                    <img src="${imgUrl}" alt="Preview" class="preview-avatar-image">
                     <button type="button" class="remove-preview" onclick="removerArquivo_${dropzoneId}(event)">✖</button>
                 `;
                 previewContainer.appendChild(div);

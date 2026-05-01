@@ -83,11 +83,11 @@ try {
                                     ?>
                                     <tr>
                                         <td>
-                                            <div style="display: flex; align-items: center; gap: 15px;">
-                                                <img src="<?php echo $avatar; ?>" alt="Logo" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);">
+                                            <div class="fornecedor-info-row">
+                                                <img src="<?php echo $avatar; ?>" alt="Logo" class="fornecedor-avatar-small">
                                                 <div>
-                                                    <strong style="display: block; color: white;"><?php echo htmlspecialchars($forn['nome']); ?></strong>
-                                                    <span style="font-size: 0.8rem; color: var(--text-muted);"><?php echo htmlspecialchars($forn['email']); ?></span>
+                                                    <strong class="fornecedor-name"><?php echo htmlspecialchars($forn['nome']); ?></strong>
+                                                    <span class="fornecedor-email"><?php echo htmlspecialchars($forn['email']); ?></span>
                                                 </div>
                                             </div>
                                         </td>
@@ -101,7 +101,7 @@ try {
                                     </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <tr><td colspan="3" style="text-align: center; padding: 30px; color: var(--text-muted);">Nenhum fornecedor cadastrado ainda.</td></tr>
+                                    <tr><td colspan="3" class="empty-table-cell">Nenhum fornecedor cadastrado ainda.</td></tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
@@ -127,7 +127,7 @@ try {
                     <div id="dropzoneFornNovo" class="dropzone-container">
                         <span class="dropzone-icon">+</span>
                         <p class="dropzone-text">Arraste a logo da empresa aqui ou clique</p>
-                        <input type="file" id="foto_perfil_novo" name="foto_perfil" accept="image/*" style="display: none;">
+                        <input type="file" id="foto_perfil_novo" name="foto_perfil" accept="image/*" class="hidden-input">
                     </div>
                     <div id="previewFornNovo" class="previews-grid single-profile"></div>
                 </div>
@@ -177,7 +177,7 @@ try {
                         <div id="dropzoneFornEdit" class="dropzone-container">
                             <span class="dropzone-icon">+</span>
                             <p class="dropzone-text">Arraste a nova logo aqui ou clique</p>
-                            <input type="file" id="foto_perfil_edit" name="foto_perfil" accept="image/*" style="display: none;">
+                            <input type="file" id="foto_perfil_edit" name="foto_perfil" accept="image/*" class="hidden-input">
                         </div>
                         <div id="previewFornEdit" class="previews-grid single-profile"></div>
                     </div>
@@ -212,7 +212,7 @@ try {
                     </div>
                 </div>
 
-                <div class="modal-footer" style="margin-top: 20px;">
+                <div class="modal-footer">
                     <button type="submit" class="btn-primary w-full">Salvar Configurações</button>
                 </div>
             </form>
