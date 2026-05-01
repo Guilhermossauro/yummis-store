@@ -53,3 +53,14 @@ Esta etapa aumenta a eficiência de decisão de compra e garante consistência n
 
 Estes recursos são a base de uso diário e segurança, garantindo controle de acesso e experiência personalizada para cada usuário.
 
+
+## Etapa 4: Dinâmica de Negociação Avançada
+
+- Deadlines para propostas que bloqueiam submissões após data de validade final.
+- Timeline visual de auditoria do pedido mostrando ações e status em sequência.
+- Chat contextual por pedido, separado do chat geral, para negociações com histórico de cotação.
+
+### Justificativa
+
+A negociação avançada melhora transparência e compliance, permitindo que todas as partes acompanhem prazos e histórico da negociação.
+
