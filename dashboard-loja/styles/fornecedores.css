@@ -1,0 +1,104 @@
+/* --- Modais Maiores --- */
+.modal-lg { max-width: 600px; }
+
+.form-help { font-size: 0.85rem; color: var(--text-muted); margin-top: 0; margin-bottom: 20px; }
+
+/* --- Submenus (Abas) --- */
+.modal-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+    border-bottom: 2px solid transparent;
+    transition: 0.3s;
+}
+
+.tab-btn:hover { color: white; }
+.tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+
+.tab-content { display: none; animation: fadeIn 0.3s; }
+.tab-content.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- Toggles de Permissão (Switches) --- */
+.permission-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+}
+
+.permission-row strong { display: block; color: white; font-size: 0.95rem; }
+.permission-row p { margin: 5px 0 0 0; font-size: 0.8rem; color: var(--text-muted); }
+
+/* Switch Style */
+.switch { position: relative; display: inline-block; width: 46px; height: 24px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #334155; transition: .4s; border-radius: 34px;
+}
+.slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background-color: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--accent-blue); }
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* --- Preview Exclusivo para Foto de Perfil Única --- */
+.previews-grid.single-profile {
+    justify-content: center;
+}
+
+.preview-item.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; /* Bolinha */
+    cursor: default;
+    position: relative;
+    border: 2px solid var(--accent-blue); /* Bordinha elegante */
+    overflow: hidden; /* A MÁGICA: Impede a foto de vazar do quadrado/círculo */
+    background: var(--bg-card);
+}
+
+.preview-item.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Corta a imagem perfeitamente no centro sem achatar */
+}
+
+/* Botão de Fechar o Preview (O X vermelho) */
+.remove-preview {
+    position: absolute; 
+    top: 5px; 
+    right: 5px; 
+    background: rgba(220, 38, 38, 0.9);
+    color: white; 
+    border: none; 
+    border-radius: 50%; 
+    width: 22px; 
+    height: 22px;
+    font-size: 12px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    z-index: 10;
+}
+
+.remove-preview:hover { background: red; }

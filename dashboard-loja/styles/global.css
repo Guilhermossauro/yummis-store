@@ -1,0 +1,95 @@
+:root {
+    /* Paleta Dark Premium */
+    --bg-body: #0b1120;        /* Fundo bem escuro */
+    --bg-card: #151e32;        /* Azul noite para painéis */
+    --bg-card-hover: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #64748b;
+    
+    --accent-blue: #3b82f6;    /* Azul primário */
+    --accent-cyan: #06b6d4;
+    --accent-orange: #f97316;
+    --danger: #ef4444;
+    --success: #10b981;
+    
+    --border-color: rgba(255, 255, 255, 0.05);
+    --sidebar-width: 260px;
+}
+
+body, html { 
+    margin: 0; padding: 0; 
+    font-family: 'Poppins', sans-serif; 
+    color: var(--text-main); 
+    height: 100%;
+    /* Efeito de Fundo Animado Sutil */
+    background: linear-gradient(-45deg, #0b1120, #0f172a, #0b1120, #0a0f1d);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.app-layout { display: flex; height: 100vh; overflow: hidden; }
+
+/* Sidebar com Efeito Glass/Dark */
+.sidebar { 
+    width: var(--sidebar-width); 
+    background: rgba(21, 30, 50, 0.8);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border-color);
+    display: flex; flex-direction: column; 
+    transition: transform 0.3s ease;
+    z-index: 100;
+}
+
+.logo { padding: 30px 20px; font-size: 1.8rem; font-weight: 700; color: white;}
+.logo span { color: var(--accent-blue); }
+
+.menu { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 0 15px; }
+.menu a { 
+    padding: 12px 15px; color: var(--text-muted); text-decoration: none; 
+    border-radius: 8px; transition: all 0.3s; display: flex; align-items: center; gap: 10px;
+}
+.menu a:hover, .menu a.active { 
+    background: var(--accent-blue); color: white; 
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.storage-box {
+    margin: 20px; padding: 15px; background: rgba(0,0,0,0.2);
+    border-radius: 12px; border: 1px solid var(--border-color);
+}
+.storage-info { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; }
+.progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent-cyan); border-radius: 4px; }
+.storage-box small { color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 8px; }
+
+.main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+
+.topbar { 
+    padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; 
+    background: transparent;
+}
+.topbar-left { display: flex; align-items: center; gap: 20px; }
+.topbar h2 { margin: 0; font-weight: 600; font-size: 1.4rem; }
+
+.user-info { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.user-info img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--accent-blue); }
+
+.content { padding: 0 30px 30px 30px; }
+.btn-primary { 
+    background: var(--accent-blue); color: white; border: none; padding: 10px 20px; 
+    border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+
+/* Hamburger Menu Animado */
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+.hamburger span { width: 25px; height: 3px; background: white; border-radius: 3px; transition: 0.3s; }
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }

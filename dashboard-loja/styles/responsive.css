@@ -1,0 +1,21 @@
+@media (max-width: 992px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .chart-container, .table-container, .storage-circular { grid-column: span 1; }
+    
+    .hamburger { display: flex; } /* Mostra o icone */
+    
+    .sidebar {
+        position: fixed;
+        left: -100%; /* Esconde fora da tela */
+        top: 0;
+        height: 100%;
+        background: var(--bg-card);
+        box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    
+    /* Classe adicionada pelo JS */
+    .sidebar.active { left: 0; }
+    
+    .topbar { padding: 15px 20px; }
+    .content { padding: 0 15px 20px 15px; }
+}

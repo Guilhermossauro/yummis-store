@@ -1,0 +1,111 @@
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); /* Fundo escuro transparente */
+    backdrop-filter: blur(4px); /* Efeito de desfoque no fundo */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.active { display: flex; }
+
+.modal-content {
+    background: var(--bg-card); /* Fundo azul noite */
+    color: var(--text-main); /* Texto branco */
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 { margin: 0; color: white; font-weight: 600; }
+.close-modal { font-size: 1.5rem; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
+.close-modal:hover { color: var(--danger); }
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; color: var(--text-muted); }
+
+/* Inputs no estilo Dark */
+.form-group input, .form-group textarea {
+    width: 100%; 
+    padding: 12px; 
+    border: 1px solid var(--border-color); 
+    border-radius: 8px; 
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Esconde a barra de rolagem mas permite rolar */
+.modal-content::-webkit-scrollbar { width: 6px; }
+.modal-content::-webkit-scrollbar-track { background: transparent; }
+.modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+/* --- TRUQUE PARA MATAR O FUNDO BRANCO DO AUTOFILL DO NAVEGADOR --- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px var(--bg-card) inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* --- ESTILO DO DROPZONE (TEMA ESCURO) --- */
+.dropzone-container {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.dropzone-container:hover, .dropzone-container.dragover {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-blue);
+}
+
+.dropzone-icon {
+    font-size: 2.5rem;
+    color: var(--accent-blue);
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 300;
+}
+
+.dropzone-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.previews-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+}

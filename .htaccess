@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Impede que vejam as pastas de sistema
+Options -Indexes
+
+# Se o usuário acessar a raiz, o index.php acima cuida do redirecionamento
+DirectoryIndex index.php

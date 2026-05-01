@@ -1,0 +1,111 @@
+:root {
+    /* Paleta extraída da imagem */
+    --blue-deep: #072F87;    /* Azul mais escuro (Autoridade) */
+    --blue-primary: #0969B6; /* Azul vibrante (Ações e Destaques) */
+    --blue-slate: #0B3E68;   /* Azul acinzentado (Fundo da tela) */
+    --gold: #D3A068;         /* Dourado/Areia (Detalhes e Bordas) */
+    --beige: #DDBB9D;        /* Bege (Fundos secundários) */
+    
+    --text-dark: #2d3748;
+    --text-light: #64748b;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background-color: var(--blue-slate); /* Fundo sólido e sério */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background: #ffffff;
+    padding: 3rem 2.5rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    /* Detalhe profissional usando a cor de areia/dourado da paleta */
+    border-top: 5px solid var(--gold);
+    text-align: center;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: var(--blue-deep);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 12px;
+    border-radius: 6px;
+    color: var(--text-dark);
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+/* Foco nos inputs usando o Azul Primário da paleta */
+.form-group input:focus {
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 3px rgba(9, 105, 182, 0.15);
+    outline: none;
+}
+
+button {
+    width: 100%;
+    background: var(--blue-primary);
+    color: #ffffff;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: var(--blue-deep);
+}
+
+.error-msg {
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #f87171;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    display: none;
+}
